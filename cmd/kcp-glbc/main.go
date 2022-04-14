@@ -134,7 +134,8 @@ func main() {
 	if err != nil {
 		klog.Fatal(err)
 	}
-	kcpOrgInformerFactory := kcpInformers.NewSharedInformerFactory(kcpOrgClient.Cluster(logicalcluster.New("root:default:kcp-glbc")), resyncPeriod)
+	kcpOrgInformerFactory := kcpInformers.NewSharedInformerFactory(kcpOrgClient.Cluster(logicalcluster.New(*logicalClusterTarget)), resyncPeriod)
+	// New("root:default")
 	clusterWorkspaceController, err := clusterworkspace.NewController(&clusterworkspace.ControllerConfig{
 		OrgClient:             kcpOrgClient,
 		SharedInformerFactory: kcpOrgInformerFactory,
