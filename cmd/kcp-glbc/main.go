@@ -17,6 +17,7 @@ import (
 	kuadrantv1 "github.com/kuadrant/kcp-glbc/pkg/client/kuadrant/clientset/versioned"
 	"github.com/kuadrant/kcp-glbc/pkg/client/kuadrant/informers/externalversions"
 	"github.com/kuadrant/kcp-glbc/pkg/net"
+	"github.com/kuadrant/kcp-glbc/pkg/reconciler/clusterworkspace"
 	"github.com/kuadrant/kcp-glbc/pkg/reconciler/deployment"
 	"github.com/kuadrant/kcp-glbc/pkg/reconciler/dns"
 	"github.com/kuadrant/kcp-glbc/pkg/reconciler/ingress"
@@ -25,6 +26,9 @@ import (
 	"github.com/kuadrant/kcp-glbc/pkg/tls"
 	"github.com/kuadrant/kcp-glbc/pkg/tls/certmanager"
 	"github.com/kuadrant/kcp-glbc/pkg/util/os"
+
+	kcpClientset "github.com/kcp-dev/kcp/pkg/client/clientset/versioned"
+	kcpInformers "github.com/kcp-dev/kcp/pkg/client/informers/externalversions"
 )
 
 const (
@@ -126,6 +130,19 @@ func main() {
 		klog.Fatal(err)
 	}
 
+	kcpOrgClient, err := kcpClientset.NewClusterForConfig(r)
+	if err != nil {
+		klog.Fatal(err)
+	}
+	kcpOrgInformerFactory := kcpInformers.NewSharedInformerFactory(kcpOrgClient.Cluster(logicalcluster.New("root:default:kcp-glbc")), resyncPeriod)
+	clusterWorkspaceController, err := clusterworkspace.NewController(&clusterworkspace.ControllerConfig{
+		OrgClient:             kcpOrgClient,
+		SharedInformerFactory: kcpOrgInformerFactory,
+	})
+	if err != nil {
+		klog.Fatal(err)
+	}
+
 	controllerConfig := &ingress.ControllerConfig{
 		KubeClient:            kubeClient,
 		DnsRecordClient:       dnsRecordClient,
@@ -177,6 +194,9 @@ func main() {
 	glbcFilteredInformerFactory.Start(ctx.Done())
 	glbcFilteredInformerFactory.WaitForCacheSync(ctx.Done())
 
+	kcpOrgInformerFactory.Start(ctx.Done())
+	kcpOrgInformerFactory.WaitForCacheSync(ctx.Done())
+
 	go func() {
 		ingressController.Start(ctx, numThreads)
 	}()
@@ -195,6 +215,10 @@ func main() {
 
 	go func() {
 		deploymentController.Start(ctx, numThreads)
+	}()
+
+	go func() {
+		clusterWorkspaceController.Start(ctx, numThreads)
 	}()
 
 	<-ctx.Done()
