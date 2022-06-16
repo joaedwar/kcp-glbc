@@ -154,12 +154,12 @@ fi
 echo "Waiting for KCP server to be ready..."
 wait_for "grep 'Ready to start controllers' ${KCP_LOG_FILE}" "kcp" "1m" "5"
 
-(cd ${KCP_GLBC_DIR} && make generate-ld-config)
+# (cd ${KCP_GLBC_DIR} && make generate-ld-config)
 
 #2. Setup workspaces (kcp-glbc, kcp-glbc-compute, kcp-glbc-user, kcp-glbc-user-compute)
 KUBECONFIG=.kcp/admin.kubeconfig ${SCRIPT_DIR}/deploy.sh -c "none"
 
-#3. Create GLBC workload cluster and wait for it to be ready
+# #3. Create GLBC workload cluster and wait for it to be ready
 createWorkloadCluster $KCP_GLBC_CLUSTER_NAME 8081 8444 "glbc"
 kubectl apply -f config/deploy/local/glbc-syncer.yaml
 
@@ -169,7 +169,7 @@ KUBECONFIG=.kcp/admin.kubeconfig kubectl wait --timeout=300s --for=condition=Rea
 #4. Deploy GLBC components
 KUBECONFIG=.kcp/admin.kubeconfig ${SCRIPT_DIR}/deploy.sh -c ${GLBC_DEPLOY_COMPONENTS}
 
-#5. Create User workload clusters and wait for them to be ready
+# #5. Create User workload clusters and wait for them to be ready
 KUBECONFIG=.kcp/admin.kubeconfig ${KUBECTL_KCP_BIN} workspace use "root:default:kcp-glbc-user-compute"
 echo "Creating $NUM_CLUSTERS kcp workload cluster(s)"
 port80=8082
