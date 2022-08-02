@@ -7,14 +7,12 @@ For more information on the architecture of GLBC and how the various component w
 Use this tutorial to perform the following actions:
 
 * Install the `kcp-glbc` instance and verify installation.
-* Troubleshoot installation if needed. 
 * Follow along through the demo and have GLBC running and working with an AWS domain, and then deploy the "sample service" to begin viewing how GLBC provides ingress in a multi-cluster ingress scenario.
 
 
 
 ## Prerequisites
-- Clone this repository (KCP-GLBC).
-- Have KCP 0.5.0
+- Clone this repository (KCP-GLBC) with release tag KCP 0.5.0
 - Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
 - Install Go 1.17 or higher as that is the version used in KCP-GLBC as per the [go.mod](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
 - Have an AWS account, a DNS Zone, and a subdomain of the domain being used. You will need this to then tell GLBC to make use of your AWS credentials and configuration.
