@@ -1,77 +1,94 @@
-# GLBC
+# What is GLBC?
 
-GLBC provides DNS-based global load balancing and transparent multi-cluster ingress when leveraging KCP. The GLBCs main API is the Kubernetes Ingress object. GLBC watches for ingress objects and mutates them adding in the GLBC managed host and TLS certificate.
+The Global Load Balancer Controller (GLBC) leverages [KCP](https://github.com/Kuadrant/kcp) to provide DNS-based global load balancing and transparent multi-cluster ingress. The main API for the GLBC is the Kubernetes Ingress object. GLBC identifies ingress objects and transforms them adding in the GLBC managed host and TLS certificate.
 
 For more information on the architecture of GLBC and how the various component work, refer to the [overview documentation](https://github.com/Kuadrant/kcp-glbc/blob/bb8e43639691568b594720244a0c94a23470a587/docs/getting_started/overview.md).
 
 Use this tutorial to perform the following actions:
 
-* Install the `kcp-glbc` instance and verify installation.
-* Follow along through the demo and have GLBC running and working with an AWS domain, and then deploy the "sample service" to begin viewing how GLBC provides ingress in a multi-cluster ingress scenario.
+* Install the KCP-GLBC instance and verify installation.
+* Follow the demo and have GLBC running and working with an AWS domain. You can then deploy the sample service to view how GLBC allows access to services  in a multi-cluster ingress scenario.
 
+---
 
+# Install GLBC
 
 ## Prerequisites
-- Clone this repository (KCP-GLBC) with release tag KCP 0.5.0
+
+- Ensure you clone [this](https://github.com/Kuadrant/kcp-glbc.git) repository KCP-GLBC with the release tag `KCP 0.5.0`
 - Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
-- Install Go 1.17 or higher as that is the version used in KCP-GLBC as per the [go.mod](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
-- Have an AWS account, a DNS Zone, and a subdomain of the domain being used. You will need this to then tell GLBC to make use of your AWS credentials and configuration.
+- Install Go `1.17` or higher. This is the version used in KCP-GLBC as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
+- You have an AWS account, a DNS Zone, and a subdomain for the domain being used. You will need this in order to instruct GLBC to validate your AWS credentials and configuration.
 
 
 ## Installation
 
-Clone the repo and run:
+Clone the repo and run the following command:
 
 ```bash
 make local-setup
 ```
-Note: If errors are encountered during the local-setup, please refer to the "Troubleshooting Installation" document.
 
-This script will: 
-* build all the binaries
-* Deploy three Kubernetes `1.22` clusters locally using kind.
+> NOTE: If errors are encountered during the local-setup, refer to the Troubleshooting Installation document.
+
+The script performs the following actions:
+
+* Build all the binaries.
+* Deploy three Kubernetes `1.22` clusters locally using [kind](https://kind.sigs.k8s.io/docs/user/quick-start/).
 * Deploy and configure the ingress controllers in each cluster.
 * Start the KCP server.
-* Create KCP workspaces for glbc and user resources:
-    * kcp-glbc
-    * kcp-glbc-compute
-    * kcp-glbc-user
-    * kcp-glbc-user-compute
+* Create KCP workspaces for GLBC and user resources:
+    * `kcp-glbc`
+    * `kcp-glbc-compute`
+    * `kcp-glbc-user`
+    * `kcp-glbc-user-compute`
 * Add workload clusters to the `*-compute` workspaces
     * kcp-glbc-compute: 1x kind cluster
     * kcp-glbc-user-compute: 2x kind clusters
-* Deploy glbc dependencies (cert-manager) into kcp-glbc workspace.
-
-<br>
-
-Once the local-setup has completed running successfully, it will say that KCP is now running. However, at this point, GLBC is not yet running. You will be presented with two options to deploy GLBC:
-1. [Local-deployment](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/local_deployment.md): this option is good for testing purposes by using a local KCP instance and Kind clusters.
-
-2. [Deploy latest in KCP](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/deployment.md) with monitoring enabled: this will deploy GLBC to your target KCP instance. This will enable you to view observability in Prometheus and Grafana.
-
-<br>
-
-<b>For the demo,</b> before deploying GLBC, we will want to provide it with your AWS credentials and configuration:
-
-The easiest way to do this is by going into our IDE and opening the KCP-GLBC project. From here, we will want to navigate to the following environment file: `./config/deploy/local/aws-credentials.env` and plug in your "AWS access key ID" and "AWS Secret Access Key" as the example below:
-
-![Screenshot from 2022-07-28 12-33-50](https://user-images.githubusercontent.com/73656840/181609265-8577f9c0-1d32-4e1f-8cf2-7542a340393b.png)
+* Deploy GLBC dependencies (`cert-manager`) into the KCP-GLBC workspace.
 
 
-Next, we will want to navigate to `./config/deploy/local/controller-config.env` and change the following fields to something similar to this:
+## Verify Installation
 
-![Screenshot from 2022-07-28 12-43-56](https://user-images.githubusercontent.com/73656840/181609374-b0d2c81f-0d46-4816-b53e-05514fa382c2.png)
+1. Verify that the ingress was created after deploying the sample service:
+   ```bash
+   kubectl get ingress
+   ```
+1. You can also view in your AWS domain if the DNS record was created.
+
+   ![Screenshot from 2022-07-28 19-40-03](https://user-images.githubusercontent.com/73656840/181613546-4257b69c-a824-4d76-bf08-d56f70771ef3.png)
+
+---
+
+## Deploy GLBC
+
+After the `local-setup` has successfully completed, you will receive a message that KCP is now running. At this point, GLBC is not yet running. You will be presented with two options to deploy GLBC:
+
+1. [Local-deployment](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/local_deployment.md): This option is good for testing purposes by using a local KCP instance and kind clusters.
+
+1. [Deploy latest in KCP](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/deployment.md) with monitoring enabled: This will deploy GLBC to your target KCP instance, and allow you to view observability in Prometheus and Grafana.
 
 
-The fields that might be needed to be changed are:
-- AWS_DNS_PUBLIC_ZONE_ID=to your own Hosted zone ID.
+### Add AWS credentials
 
-![Screenshot from 2022-07-28 12-43-16](https://user-images.githubusercontent.com/73656840/181609406-7fc7f32b-001e-4da8-b423-fdb00b11228f.png)
+For the demo, before deploying GLBC, you will need to provide your AWS credentials and configuration. The easiest way to do this is to perform the folowing steps:
 
-- GLBC_DNS_PROVIDER=aws
-- GLBC_DOMAIN=to your own subdomain
+1. Open the KCP-GLBC project in your IDE. 
+1. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
+1. Enter your `AWS Access Key ID` and `AWS Secret Access Key` as indicated in the example below:
+   ![Screenshot from 2022-07-28 12-33-50](https://user-images.githubusercontent.com/73656840/181609265-8577f9c0-1d32-4e1f-8cf2-7542a340393b.png)
 
-<br>
+1. Navigate to `./config/deploy/local/controller-config.env` and change the fields to something similar to this:
+
+   ![Screenshot from 2022-07-28 12-43-56](https://user-images.githubusercontent.com/73656840/181609374-b0d2c81f-0d46-4816-b53e-05514fa382c2.png)
+
+   The fields that might need to be edited include:
+   - Replace `<AWS_DNS_PUBLIC_ZONE_ID>` with your own hosted zone ID.
+   - Replace `<GLBC_DNS_PROVIDER>`
+   - Replace `<GLBC_DOMAIN>` with your specified subdomain
+
+   ![Screenshot from 2022-07-28 12-43-16](https://user-images.githubusercontent.com/73656840/181609406-7fc7f32b-001e-4da8-b423-fdb00b11228f.png)
+
 
 After all the above is set up correctly, for the demo, we will want to copy the commands from the output in the terminal under Option 2, and run it in a new tab to have GLBC running and make use of your "controller-config.env" and "aws-credentials.env". This way, we will be able to curl the domain in the tutorial and visualize how the workload from cluster-1 migrates to cluster-2. The commands are similar to the following:
 
@@ -82,21 +99,9 @@ After running the local-setup successfully and have GLBC running, attempt to dep
 
 ![Screenshot from 2022-07-28 14-42-57](https://user-images.githubusercontent.com/73656840/181609847-518076be-c1de-4894-b44e-2fcd4a2f80e8.png)
 
-<br>
 
-## Verify Installation
-1. Verify that the ingress was created after deploying the sample service:
-```bash
-kubectl get ingress
-```
 
-2. You could also view in your AWS domain if the DNS record was created.
-
-![Screenshot from 2022-07-28 19-40-03](https://user-images.githubusercontent.com/73656840/181613546-4257b69c-a824-4d76-bf08-d56f70771ef3.png)
-
-<br>
-
-## Main Use Case - Demo on providing ingress in a multi-cluster ingress scenario
+## Dmo on providing ingress in a multi-cluster ingress scenario
 
 This section will show how GLBC is used to provide ingress in a multi-cluster ingress scenario.
 
