@@ -92,12 +92,11 @@ For the demo, before deploying GLBC, you will need to provide your AWS credentia
 
  1. After the above is correctly configured, copy the commands from the output in the terminal under _Option 2_, and run it in a new tab use `controller-config.env` and `aws-credentials.env` in GLBC. This way, you will be able to curl the domain in the tutorial and visualize how the workload from cluster-1 migrates to cluster-2. The commands are similar to the following:
 
-   ![Screenshot from 2022-07-28 09-10-12](https://user-images.githubusercontent.com/73656840/181609752-1b4d481a-41bf-4de6-aba6-a8e0d004724e.png)
+   ![Screenshot of cluster migration](https://user-images.githubusercontent.com/73656840/181609752-1b4d481a-41bf-4de6-aba6-a8e0d004724e.png)
 
  1. After running `local-setup` successfully and while running GLBC running, deploy the sample service. You can do this by copying each command under _sample service_ and running them in a new tab in the terminal. The commands will look similar to the following:
 
    ![Screenshot from 2022-07-28 14-42-57](https://user-images.githubusercontent.com/73656840/181609847-518076be-c1de-4894-b44e-2fcd4a2f80e8.png)
-
 
 
 ## Demo on providing ingress in a multi-cluster ingress scenario
@@ -106,10 +105,12 @@ This section will show how GLBC is used to provide ingress in a multi-cluster in
 
 > NOTE: This version of the tutorial works with `KCP 0.5.0`
 
-For this tutorial, after following along the "Installation" section of this document, we should already have KCP and GLBC running, and also have had deployed the sample service which would have created an ingress named *"ingress-nondomain"*. To note: the "default" namespace is where we are putting all the sample resources at the moment.
+For this tutorial, after following the [Installation](#install-GLBC) section of this document, we should already have KCP and GLBC running, and also have had deployed the sample service which would have created an ingress named *"ingress-nondomain"*. 
+
+> NOTE: The `default` namespace is where you are putting all the sample resources at the moment.
 
 
-### Viewing the "default" namespace
+### Viewing the `default` namespace
 
 We will run the following command `kubectl edit ns default -o yaml` in the same tab where we deployed the sample service to view and edit the "*default*" namespace.
 
@@ -119,7 +120,6 @@ As we can see, there is a label named: "*state.internal.workload.kcp.dev/kcp-clu
 
 GLBC is telling KCP where to sync all of the work resources in the namespace to. Meaning, since the namespace has *kcp-cluster-1* set on it, the ingress will also have *kcp-cluster-1* set on it. 
 
-<br>
 
 ### Curl the running domain
 
@@ -150,7 +150,6 @@ We will notice that in the tab where we are curling the domain, it now outputs a
 
 ![Screenshot from 2022-07-28 19-38-14](https://user-images.githubusercontent.com/73656840/181613118-c692cf38-cea4-455b-b2f3-51886f15cca5.png)
 
-<br>
 
 In the meantime, in the tab where we ran the sample service, we can run the following command to view the ingress "*ingress-nondomain*": `kubectl get ingress ingress-nondomain -o yaml`. 
 
@@ -158,7 +157,6 @@ We can observe that the label in the ingress has changed from *kcp-cluster-1* to
 
 ![Screenshot from 2022-07-26 11-47-30](https://user-images.githubusercontent.com/73656840/180992725-c6a4f985-da9f-4b68-bda7-ed3e61f43499.png)
 
-<br>
 
 Moreover, In the annotations we also have a status there for *kcp-cluster-2* and it has an IP address in it meaning that it has indeed synced to *kcp-cluster-2*. We will also find another annotation named something like "*kuadrant.dev/glbc-delete-at-kcp-cluster-1: 1658757564*", which is code coming from the GLBC which is saying "Don't remove this work from *kcp-cluster-1* until the DNS has propagated."
 
@@ -166,9 +164,8 @@ For that reason we can also observe another annotation named "*finalizers.worklo
 
 ![Screenshot from 2022-07-26 11-48-57](https://user-images.githubusercontent.com/73656840/180993006-78f47abc-d006-4045-95b7-33428cf65d6b.png)
 
-<br>
 
 By now, we should have a response back from *kcp-cluster-2*, which would mean that the workload has successfully migrated from cluster-1 to cluster-2.
 
-![Screenshot from 2022-07-28 19-56-10](https://user-images.githubusercontent.com/73656840/181616186-0921ad19-53d9-4b6b-8fee-012517e2878c.png)
+   ![Screenshot from 2022-07-28 19-56-10](https://user-images.githubusercontent.com/73656840/181616186-0921ad19-53d9-4b6b-8fee-012517e2878c.png)
 
