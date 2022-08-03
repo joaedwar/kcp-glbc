@@ -23,13 +23,14 @@ Use this tutorial to perform the following actions:
 
 ## Installation
 
-Clone the repo and run the following command:
+1. Clone the [repository](https://github.com/Kuadrant/kcp-glbc.git).
+1. Run the following command:
 
-```bash
-make local-setup
-```
+   ```bash
+   make local-setup
+   ```
 
-> NOTE: If errors are encountered during the local-setup, refer to the Troubleshooting Installation document.
+> NOTE: If errors are encountered while running the locall-setup command, refer to the Troubleshooting Installation document.
 
 The script performs the following actions:
 
@@ -87,29 +88,26 @@ For the demo, before deploying GLBC, you will need to provide your AWS credentia
    - Replace `<GLBC_DNS_PROVIDER>`
    - Replace `<GLBC_DOMAIN>` with your specified subdomain
 
-   ![Screenshot from 2022-07-28 12-43-16](https://user-images.githubusercontent.com/73656840/181609406-7fc7f32b-001e-4da8-b423-fdb00b11228f.png)
+       ![Screenshot from 2022-07-28 12-43-16](https://user-images.githubusercontent.com/73656840/181609406-7fc7f32b-001e-4da8-b423-fdb00b11228f.png)
 
+ 1. After the above is correctly configured, copy the commands from the output in the terminal under _Option 2_, and run it in a new tab use `controller-config.env` and `aws-credentials.env` in GLBC. This way, you will be able to curl the domain in the tutorial and visualize how the workload from cluster-1 migrates to cluster-2. The commands are similar to the following:
 
-After all the above is set up correctly, for the demo, we will want to copy the commands from the output in the terminal under Option 2, and run it in a new tab to have GLBC running and make use of your "controller-config.env" and "aws-credentials.env". This way, we will be able to curl the domain in the tutorial and visualize how the workload from cluster-1 migrates to cluster-2. The commands are similar to the following:
+   ![Screenshot from 2022-07-28 09-10-12](https://user-images.githubusercontent.com/73656840/181609752-1b4d481a-41bf-4de6-aba6-a8e0d004724e.png)
 
-![Screenshot from 2022-07-28 09-10-12](https://user-images.githubusercontent.com/73656840/181609752-1b4d481a-41bf-4de6-aba6-a8e0d004724e.png)
+ 1. After running `local-setup` successfully and while running GLBC running, deploy the sample service. You can do this by copying each command under _sample service_ and running them in a new tab in the terminal. The commands will look similar to the following:
 
-
-After running the local-setup successfully and have GLBC running, attempt to deploy the sample service. You can do this by copying each command under "sample service" and run them in a new tab in the terminal. The commands will look similar to these:
-
-![Screenshot from 2022-07-28 14-42-57](https://user-images.githubusercontent.com/73656840/181609847-518076be-c1de-4894-b44e-2fcd4a2f80e8.png)
+   ![Screenshot from 2022-07-28 14-42-57](https://user-images.githubusercontent.com/73656840/181609847-518076be-c1de-4894-b44e-2fcd4a2f80e8.png)
 
 
 
-## Dmo on providing ingress in a multi-cluster ingress scenario
+## Demo on providing ingress in a multi-cluster ingress scenario
 
 This section will show how GLBC is used to provide ingress in a multi-cluster ingress scenario.
 
-<b>Note: This version of the tutorial works with KCP 0.5.0.</b>
+> NOTE: This version of the tutorial works with `KCP 0.5.0`
 
 For this tutorial, after following along the "Installation" section of this document, we should already have KCP and GLBC running, and also have had deployed the sample service which would have created an ingress named *"ingress-nondomain"*. To note: the "default" namespace is where we are putting all the sample resources at the moment.
 
-<br>
 
 ### Viewing the "default" namespace
 
