@@ -14,7 +14,7 @@ Use this tutorial to perform the following actions:
 ## Prerequisites
 - Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
 - Install Go `1.17` or higher. This is the version used in KCP-GLBC as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
-- Install [yq](https://snapcraft.io/install/yq/fedora) command-line YAML processor.
+- Install the [yq](https://snapcraft.io/install/yq/fedora) command-line YAML processor.
 - Have an AWS account, a DNS Zone, and a subdomain of the domain being used. You will need this in order to instruct GLBC to make use of your AWS credentials and configuration.
 
 
@@ -28,12 +28,12 @@ make local-setup
 > NOTE: If errors are encountered during the local-setup, refer to the Troubleshooting Installation document.
 
 This script performs the following actions: 
-* build all the binaries
-* Deploy three Kubernetes `1.22` clusters locally using kind.
-* Deploy and configure the ingress controllers in each cluster.
-* Downloads KCP 0.6.0.
-* Start the KCP server.
-* Create KCP workspaces for glbc and user resources:
+* Builds all the binaries
+* Deploys three Kubernetes `1.22` clusters locally using kind
+* Deploys and configures the ingress controllers in each cluster
+* Downloads KCP 0.6.0
+* Starts the KCP server
+* Creates KCP workspaces for GLBC and user resources:
     * kcp-glbc
     * kcp-glbc-compute
     * kcp-glbc-user
@@ -41,45 +41,39 @@ This script performs the following actions:
 * Add workload clusters to the `*-compute` workspaces
     * kcp-glbc-compute: 1x kind cluster
     * kcp-glbc-user-compute: 2x kind clusters
-* Deploy glbc dependencies (cert-manager) into kcp-glbc workspace.
+* Deploy GLBC dependencies (cert-manager) into the kcp-glbc workspace.
 
-<br>
+-----
 
-Once the local-setup has successfully completed, it will say that KCP is now running. However, at this point, GLBC is not yet running. You will be presented in the terminal with two options to deploy GLBC:
+After `local-setup` has successfully completed, it will say that KCP is now running. However, at this point, GLBC is not yet running. You will be presented in the terminal with two options to deploy GLBC:
+
 1. [Local-deployment](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/local_deployment.md): this option is good for testing purposes by using a local KCP instance and kind clusters.
 
 2. [Deploy latest in KCP](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/deployment.md) with monitoring enabled: this will deploy GLBC to your target KCP instance. This will enable you to view observability in Prometheus and Grafana.
 
-<b>For the demo,</b> before deploying GLBC, we will want to provide it with your AWS credentials and configuration.
-
-<br>
+For the demo, before deploying GLBC, we will want to provide it with your AWS credentials and configuration.
 
 
 ### Provide GLBC with AWS credentials and configuration
 The easiest way to do this is to perform the following steps:
 
 1. Open the KCP-GLBC project in your IDE.
-2. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
-3. Enter your `AWS access key ID` and `AWS Secret Access Key` as indicated in the example below:
+1. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
+1. Enter your `AWS access key ID` and `AWS Secret Access Key` as indicated in the example below:
 
-![Screenshot from 2022-07-28 12-33-50](https://user-images.githubusercontent.com/73656840/181609265-8577f9c0-1d32-4e1f-8cf2-7542a340393b.png)
+   ![Screenshot from 2022-07-28 12-33-50](https://user-images.githubusercontent.com/73656840/181609265-8577f9c0-1d32-4e1f-8cf2-7542a340393b.png)
+   
+1. Navigate to `./config/deploy/local/controller-config.env` and change the following fields to something similar to this:
 
+   ![Screenshot from 2022-07-28 12-43-56](https://user-images.githubusercontent.com/73656840/181609374-b0d2c81f-0d46-4816-b53e-05514fa382c2.png)
 
-4. Navigate to `./config/deploy/local/controller-config.env` and change the following fields to something similar to this:
-
-![Screenshot from 2022-07-28 12-43-56](https://user-images.githubusercontent.com/73656840/181609374-b0d2c81f-0d46-4816-b53e-05514fa382c2.png)
-
-
-The fields that might need to be edited include:
-   - Replace `<AWS_DNS_PUBLIC_ZONE_ID>` with your own hosted zone ID.
-   - Replace `<GLBC_DNS_PROVIDER>` with "aws".
-   - Replace `<GLBC_DOMAIN>` with your specified subdomain
-
-<br>
+      The fields that might need to be edited include:
+       - Replace `<AWS_DNS_PUBLIC_ZONE_ID>` with your own hosted zone ID.
+       - Replace `<GLBC_DNS_PROVIDER>` with `aws`.
+       - Replace `<GLBC_DOMAIN>` with your specified subdomain
 
 ### Run GLBC
 After all the above is set up correctly, for the demo, now we can run the first 3 commands under Option 1 to have GLBC running. The commands are similar to the following (run them in a new tab):
-
 
 ```bash
 Run Option 1 (Local):
