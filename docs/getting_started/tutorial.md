@@ -73,20 +73,16 @@ The easiest way to do this is to perform the following steps:
        - Replace `<GLBC_DOMAIN>` with your specified subdomain
 
 ### Run GLBC
-After all the above is set up correctly, for the demo, now we can run the first 3 commands under Option 1 to have GLBC running. The commands are similar to the following (run them in a new tab):
+After all the above is set up correctly, for the demo, we can run the first command under Option 1 to change to the directory where the repo is located. The commands are similar to the following (run them in a new tab):
 
 ```bash
 Run Option 1 (Local):
        cd to/the/repo
-       export KUBECONFIG=config/deploy/local/kcp.kubeconfig
-       ./bin/kubectl-kcp workspace use root:default:kcp-glbc
 ```
-We need to export KUBECONFIG to ensure that information about our clusters are passed to child processes, then we will be able to change our workspace. We should get an output saying: `Current workspace is "root:default:kcp-glbc"`
 
-
-Then, in the same tab in the terminal, run the following command to make use of your "controller-config.env" and "aws-credentials.env". This way, we will be able to curl the domain in the tutorial and visualize how the workload from cluster-1 migrates to cluster-2.
+Then, in the same tab in the terminal, run the following command to have GLBC runnning and make use of your "controller-config.env" and "aws-credentials.env". This way, we will be able to curl the domain in the tutorial and visualize how the workload from cluster-1 migrates to cluster-2.
 ```bash
-(export $(cat ./config/deploy/local/controller-config.env | xargs) && export $(cat ./config/deploy/local/aws-credentials.env | xargs) && ./bin/kcp-glbc --kubeconfig .kcp/admin.kubeconfig)
+(export $(cat ./config/deploy/local/controller-config.env | xargs) && export $(cat ./config/deploy/local/aws-credentials.env | xargs) && KUBECONFIG=./tmp/kcp.kubeconfig ./bin/kcp-glbc)
 ```
 <br>
 
