@@ -219,7 +219,8 @@ In the tab where we are watching the ingress, we can observe that the label in t
 
 Moreover, In the annotations we also have a status there for *kcp-cluster-2* and it has an IP address in it meaning that it has indeed synced to *kcp-cluster-2*. We will also find another annotation named "*deletion.internal.workload.kcp.dev/kcp-cluster-1*", which is code coming from the GLBC which is saying "Don't remove this work from *kcp-cluster-1* until the DNS has propagated."
 
-For that reason we can also observe another annotation named "*finalizers.workload.kcp.dev/kcp-cluster-1: kuadrant.dev/glbc-migration*" which remains there because GLBC is saying to KCP "Don't get rid of this yet, as we're waiting for it to come up to another cluster before you remove it from *kcp-cluster-1*" Once it has completely migrated, the finalizer for *kcp-cluster-1* will no longer be there and the workload will be deleted from *kcp-cluster-1*.
+For that reason we can also observe another annotation named "*finalizers.workload.kcp.dev/kcp-cluster-1: kuadrant.dev/glbc-migration*" which remains there because GLBC is saying to KCP "Don't get rid of this yet, as we're waiting for it to come up to another cluster before you remove it from *kcp-cluster-1*" Once it has completely migrated and sufficient time has been allowed for DNS propagation, the finalizer for *kcp-cluster-1* will no longer be there and the workload will be deleted from *kcp-cluster-1*.
+A DNS propagation time of the TTL (usually 60 seconds) * 2 is allowed for.
 
 ![Screenshot from 2022-08-02 12-49-21](https://user-images.githubusercontent.com/73656840/182368360-0bb65282-1751-44ea-a9da-7cfbe508e084.png)
 
