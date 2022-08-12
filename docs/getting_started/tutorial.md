@@ -31,7 +31,7 @@ This script performs the following actions:
 * Builds all the binaries
 * Deploys three Kubernetes `1.22` clusters locally using kind
 * Deploys and configures the ingress controllers in each cluster
-* Downloads KCP 0.6.0
+* Downloads KCP at the latest version integrated with glbc
 * Starts the KCP server
 * Creates KCP workspaces for GLBC and user resources:
     * kcp-glbc
