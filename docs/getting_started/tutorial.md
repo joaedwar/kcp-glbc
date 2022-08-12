@@ -136,7 +136,6 @@ You could also view in your AWS domain if the DNS record was created.
 
 This section will show how GLBC is used to provide ingress in a multi-cluster ingress scenario.
 
-<b>Note: This version of the tutorial works with KCP 0.6.0.</b>
 
 For this tutorial, after following along the "Installation" section of this document, we should already have KCP and GLBC running, and also have had deployed the sample service which would have created a placement resource, an ingress named *"ingress-nondomain"* and a DNS record. To note: the "default" namespace is where we are putting all the sample resources at the moment.
 
