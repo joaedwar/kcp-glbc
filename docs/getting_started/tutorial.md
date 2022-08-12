@@ -107,7 +107,8 @@ The sample script will remain paused until we press the enter key to migrate the
 export KUBECONFIG=.kcp/admin.kubeconfig                                         
 ./bin/kubectl-kcp workspace use root:default:kcp-glbc-user
 kubectl get ingress
-
+```
+```bash
 NAME                AGE
 ingress-nondomain   81s
 ```
