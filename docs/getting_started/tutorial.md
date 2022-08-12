@@ -106,7 +106,7 @@ The sample script will remain paused until we press the enter key to migrate the
 <br>
 
 ## Verify sample service deployment
-1. Verify that the ingress was created after deploying the sample service:
+1. In a new terminal, verify that the ingress was created after deploying the sample service:
 ```bash
 export KUBECONFIG=.kcp/admin.kubeconfig                                         
 ./bin/kubectl-kcp workspace use root:default:kcp-glbc-user
