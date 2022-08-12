@@ -1,6 +1,6 @@
 # GLBC
 
-The Global Load Balancer Controller (GLBC) leverages [KCP](https://github.com/Kuadrant/kcp) to provide DNS-based global load balancing and transparent multi-cluster ingress. The main API for the GLBC is the Kubernetes Ingress object. GLBC identifies ingress objects and transforms them adding in the GLBC managed host and TLS certificate.
+The Global Load Balancer Controller (GLBC) leverages [KCP](https://github.com/Kuadrant/kcp) to provide DNS-based global load balancing and transparent multi-cluster ingress. The main API for the GLBC is the Kubernetes Ingress object. GLBC watches Ingress objects and transforms them adding in the GLBC managed host and TLS certificate.
 
 For more information on the architecture of GLBC and how the various component work, refer to the [overview documentation](https://github.com/Kuadrant/kcp-glbc/blob/bb8e43639691568b594720244a0c94a23470a587/docs/getting_started/overview.md).
 
