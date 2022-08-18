@@ -13,8 +13,8 @@ Use this tutorial to perform the following actions:
 
 ## Prerequisites
 - Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
-- Install Go `1.17` or higher. This is the version used in KCP-GLBC as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
-- Install the [yq](https://snapcraft.io/install/yq/fedora) command-line YAML processor.
+- Install Go `1.18` or higher. This is the version used in KCP-GLBC as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
+- Install the [yq](https://github.com/mikefarah/yq) command-line YAML processor.
 - Have an AWS account, a DNS Zone, and a subdomain of the domain being used. You will need this in order to instruct GLBC to make use of your AWS credentials and configuration.
 
 
@@ -29,7 +29,7 @@ make local-setup
 
 This script performs the following actions: 
 * Builds all the binaries
-* Deploys three Kubernetes `1.22` clusters locally using kind
+* Deploys three Kubernetes `1.22` clusters locally using [kind](https://kind.sigs.k8s.io/)
 * Deploys and configures the ingress controllers in each cluster
 * Downloads KCP at the latest version integrated with glbc
 * Starts the KCP server
@@ -58,19 +58,36 @@ For the demo, before deploying GLBC, we will want to provide it with your AWS cr
 The easiest way to do this is to perform the following steps:
 
 1. Open the KCP-GLBC project in your IDE.
-1. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
-1. Enter your `AWS access key ID` and `AWS Secret Access Key` as indicated in the example below:
+2. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
+3. Enter your `AWS access key ID` and `AWS Secret Access Key` as indicated in the example below:
 
-   ![Screenshot from 2022-07-28 12-33-50](https://user-images.githubusercontent.com/73656840/181609265-8577f9c0-1d32-4e1f-8cf2-7542a340393b.png)
+```bash
+AWS_ACCESS_KEY_ID=EXAMPLEID2DJ3rSA3E
+AWS_SECRET_ACCESS_KEY=EXAMPLEKEYIEI034+fETFDS34QFAD0IAO
+```
+
    
-1. Navigate to `./config/deploy/local/controller-config.env` and change the following fields to something similar to this:
+4. Navigate to `./config/deploy/local/controller-config.env` and change the following fields to something similar to this:
 
-   ![Screenshot from 2022-07-28 12-43-56](https://user-images.githubusercontent.com/73656840/181609374-b0d2c81f-0d46-4816-b53e-05514fa382c2.png)
+```bash
+AWS_DNS_PUBLIC_ZONE_ID=Z0485348LD348SDHJSR0
+GLBC_DNS_PROVIDER=aws
+GLBC_DOMAIN=cz.hcpapps.net
+GLBC_ENABLE_CUSTOM_HOSTS=false
+GLBC_KCP_CONTEXT=system:admin
+GLBC_LOGICAL_CLUSTER_TARGET=*
+GLBC_TLS_PROVIDED=true
+GLBC_TLS_PROVIDER=glbc-ca
+HCG_LE_EMAIL=kuadrant-dev@redhat.com
+NAMESPACE=kcp-glbc
+GLBC_WORKSPACE=root:default:kcp-glbc
+GLBC_COMPUTE_WORKSPACE=root:default:kcp-glbc-user-compute
+```
 
-      The fields that might need to be edited include:
-       - Replace `<AWS_DNS_PUBLIC_ZONE_ID>` with your own hosted zone ID.
-       - Replace `<GLBC_DNS_PROVIDER>` with `aws`.
-       - Replace `<GLBC_DOMAIN>` with your specified subdomain
+The fields that might need to be edited include:
+  - Replace `<AWS_DNS_PUBLIC_ZONE_ID>` with your own hosted zone ID
+  - Replace `<GLBC_DNS_PROVIDER>` with `aws`
+  - Replace `<GLBC_DOMAIN>` with your specified subdomain
 
 ### Run GLBC
 After all the above is set up correctly, for the demo, we can run the first command under Option 1 to change to the directory where the repo is located. The commands are similar to the following (run them in a new tab):
