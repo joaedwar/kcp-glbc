@@ -1,22 +1,22 @@
 # GLBC
 
-The Global Load Balancer Controller (GLBC) leverages [KCP](https://github.com/Kuadrant/kcp) to provide DNS-based global load balancing and transparent multi-cluster ingress. The main API for the GLBC is the Kubernetes Ingress object. GLBC watches Ingress objects and transforms them adding in the GLBC managed host and TLS certificate.
+The Global Load Balancer Controller (GLBC) leverages [kcp](https://github.com/Kuadrant/kcp) to provide DNS-based global load balancing and transparent multi-cluster ingress. The main API for the GLBC is the Kubernetes Ingress object. GLBC watches Ingress objects and transforms them adding in the GLBC managed host and TLS certificate.
 
 For more information on the architecture of GLBC and how the various component work, refer to the [overview documentation](https://github.com/Kuadrant/kcp-glbc/blob/bb8e43639691568b594720244a0c94a23470a587/docs/getting_started/overview.md).
 
 Use this tutorial to perform the following actions:
 
-* Install the KCP-GLBC instance and verify installation.
+* Install the kcp-glbc instance and verify installation.
 * Follow the demo and have GLBC running and working with an AWS domain. You can then deploy the sample service to view how GLBC allows access to services  in a multi-cluster ingress scenario.
 
 ---
 
 ## Prerequisites
 - Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
-- Install Go `1.18` or higher. This is the version used in KCP-GLBC as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
+- Install Go `1.18` or higher. This is the version used in kcp-glbc as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
 - Install the [yq](https://github.com/mikefarah/yq) command-line YAML processor.
 - Have an AWS account, a DNS Zone, and a subdomain of the domain being used. You will need this in order to instruct GLBC to make use of your AWS credentials and configuration.
-
+- Add the `kcp-glbc/bin` directory to your `$PATH`
 
 ## Installation
 
@@ -31,9 +31,9 @@ This script performs the following actions:
 * Builds all the binaries
 * Deploys three Kubernetes `1.22` clusters locally using [kind](https://kind.sigs.k8s.io/)
 * Deploys and configures the ingress controllers in each cluster
-* Downloads KCP at the latest version integrated with glbc
-* Starts the KCP server
-* Creates KCP workspaces for GLBC and user resources:
+* Downloads kcp at the latest version integrated with GLBC
+* Starts the kcp server
+* Creates kcp workspaces for GLBC and user resources:
     * kcp-glbc
     * kcp-glbc-compute
     * kcp-glbc-user
@@ -45,11 +45,11 @@ This script performs the following actions:
 
 -----
 
-After `local-setup` has successfully completed, it will say that KCP is now running. However, at this point, GLBC is not yet running. You will be presented in the terminal with two options to deploy GLBC:
+After `local-setup` has successfully completed, it will say that kcp is now running. However, at this point, GLBC is not yet running. You will be presented in the terminal with two options to deploy GLBC:
 
-1. [Local-deployment](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/local_deployment.md): this option is good for testing purposes by using a local KCP instance and kind clusters.
+1. [Local-deployment](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/local_deployment.md): this option is good for testing purposes by using a local kcp instance and kind clusters.
 
-2. [Deploy latest in KCP](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/deployment.md) with monitoring enabled: this will deploy GLBC to your target KCP instance. This will enable you to view observability in Prometheus and Grafana.
+2. [Deploy latest in kcp](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/deployment.md) with monitoring enabled: this will deploy GLBC to your target kcp instance. This will enable you to view observability in Prometheus and Grafana.
 
 For the demo, before deploying GLBC, we will want to provide it with your AWS credentials and configuration.
 
@@ -57,7 +57,7 @@ For the demo, before deploying GLBC, we will want to provide it with your AWS cr
 ### Provide GLBC with AWS credentials and configuration
 The easiest way to do this is to perform the following steps:
 
-1. Open the KCP-GLBC project in your IDE.
+1. Open the kcp-glbc project in your IDE.
 2. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
 3. Enter your `AWS access key ID` and `AWS Secret Access Key` as indicated in the example below:
 
@@ -154,7 +154,7 @@ You could also view in your AWS domain if the DNS record was created.
 This section will show how GLBC is used to provide ingress in a multi-cluster ingress scenario.
 
 
-For this tutorial, after following along the "Installation" section of this document, we should already have KCP and GLBC running, and also have had deployed the sample service which would have created a placement resource, an ingress named *"ingress-nondomain"* and a DNS record. To note: the "default" namespace is where we are putting all the sample resources at the moment.
+For this tutorial, after following along the "Installation" section of this document, we should already have kcp and GLBC running, and also have had deployed the sample service which would have created a placement resource, an ingress named *"ingress-nondomain"* and a DNS record. To note: the "default" namespace is where we are putting all the sample resources at the moment.
 
 <br>
 
@@ -171,7 +171,7 @@ As we can see, there is a label named: "*state.internal.workload.kcp.dev/kcp-clu
 
 ![Screenshot from 2022-08-02 12-32-06](https://user-images.githubusercontent.com/73656840/182365628-22f04bb5-0818-46a3-8a12-3abc2e8451f3.png)
 
-GLBC is telling KCP where to sync all of the work resources in the namespace to. Meaning, since the namespace has *kcp-cluster-1* set on it, the ingress will also have *kcp-cluster-1* set on it. 
+GLBC is telling kcp where to sync all of the work resources in the namespace to. Meaning, since the namespace has *kcp-cluster-1* set on it, the ingress will also have *kcp-cluster-1* set on it. 
 
 <br>
 
