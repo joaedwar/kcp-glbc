@@ -1,6 +1,6 @@
 # What is KCP?
 
-Kube-like Control Plane (KCP) is a prototype of a multi-tentant Kubernetes control plane for workloads on many clusters.
+KCP is a prototype of a multi-tentant Kubernetes control plane for workloads on many clusters.
 
 It provides a generic CustomResourceDefinition (CRD) apiserver that is divided into multiple logical clusters that enable multitenancy of cluster-scoped resources such as CRDs and Namespaces.
 
