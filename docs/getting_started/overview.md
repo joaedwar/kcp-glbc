@@ -1,6 +1,6 @@
 # What is `kcp`?
 
-`kcp` is a prototype of a multi-tentant Kubernetes control plane for workloads on many clusters. `kcp` can be used to manage Kubernetes-like applications across one or more clusters and integrate them with cloud services. 
+`kcp` is a prototype of a multi-tenant Kubernetes control plane for workloads on many clusters. `kcp` can be used to manage Kubernetes-like applications across one or more clusters and integrate them with cloud services. 
 
 It provides a generic CRD apiserver that is divided into multiple logical clusters (in which each of the logical clusters are fully isolated) that enable multitenancy of cluster-scoped resources such as CRDs and Namespaces. 
 
