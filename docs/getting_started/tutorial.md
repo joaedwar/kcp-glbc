@@ -1,6 +1,6 @@
 # GLBC
 
-The Global Load Balancer Controller (GLBC) leverages [kcp](https://github.com/Kuadrant/kcp) to provide DNS-based global load balancing and transparent multi-cluster ingress. The main API for the GLBC is the Kubernetes Ingress object. GLBC watches Ingress objects and transforms them adding in the GLBC managed host and TLS certificate.
+The Global Load Balancer Controller (GLBC) leverages [`kcp`](https://github.com/Kuadrant/kcp) to provide DNS-based global load balancing and transparent multi-cluster ingress. The main API for the GLBC is the Kubernetes Ingress object. GLBC watches Ingress objects and transforms them adding in the GLBC managed host and TLS certificate.
 
 For more information on the architecture of GLBC and how the various component work, refer to the [overview documentation](https://github.com/Kuadrant/kcp-glbc/blob/bb8e43639691568b594720244a0c94a23470a587/docs/getting_started/overview.md).
 
@@ -9,14 +9,16 @@ Use this tutorial to perform the following actions:
 * Install the kcp-glbc instance and verify installation.
 * Follow the demo and have GLBC running and working with an AWS domain. You can then deploy the sample service to view how GLBC allows access to services  in a multi-cluster ingress scenario.
 
+<br>
 
+**Tutorial Contents:**
 * [Prerequisites](#prerequisites)
 * [Install](#installation)
-* [Provide GLBC with AWS credentials and configuration](#Provide GLBC with AWS credentials and configuration)
-* [Run GLBC](#Run GLBC)
-* Deploy the sample service Deploy the sample service
-*Verify sample service deployment Verify sample service deployment
-* (Main Use Case) Demo: **Providing ingress in a multi-cluster ingress scenario**
+* [Provide GLBC credentials](#provide-glbc-with-aws-credentials-and-configuration)
+* [Run GLBC](#run-glbc)
+* [Deploy the sample service](deploy-the-sample-service)
+* [Verify sample service deployment](verify-sample-service-deployment)
+* [Demo: **Providing ingress in a multi-cluster ingress scenario**](#main-use-case)
 
 ---
 
@@ -62,6 +64,7 @@ After `local-setup` has successfully completed, it will indicate that kcp is now
 
 For the demo, before deploying GLBC, we will want to provide it with your AWS credentials and configuration.
 
+<br>
 
 ### Provide GLBC with AWS credentials and configuration
 
@@ -97,6 +100,8 @@ The easiest way to do this is to perform the following steps:
      - Replace `<GLBC_DNS_PROVIDER>` with `aws`
      - Replace `<GLBC_DOMAIN>` with your specified subdomain
 
+<br>
+
 ### Run GLBC
 
 After all the above is configured correctly, for the demo, we can run the first command under _Option 1_ to change to the directory where the repo is located. The commands are similar to the following (run them in a new tab):
@@ -111,6 +116,8 @@ Using the same tab in the terminal, run the following command to run GLBC and us
    ```bash
    (export $(cat ./config/deploy/local/controller-config.env | xargs) && export $(cat ./config/deploy/local/aws-credentials.env | xargs) && KUBECONFIG=./tmp/kcp.kubeconfig ./bin/kcp-glbc)
    ```
+
+<br>
 
 ### Deploy the sample service
 
