@@ -13,7 +13,7 @@ Use this tutorial to perform the following actions:
 
 ## Prerequisites
 - Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
-- Install Go `1.18` or higher. This is the version used in kcp-glbc as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
+- Install Go 1.18 or higher. This is the version used in kcp-glbc as indicated in the [`go.mod`](https://github.com/Kuadrant/kcp-glbc/blob/main/go.mod) file.
 - Install the [yq](https://github.com/mikefarah/yq) command-line YAML processor.
 - Have an AWS account, a DNS Zone, and a subdomain of the domain being used. You will need this in order to instruct GLBC to make use of your AWS credentials and configuration.
 - Add the `kcp-glbc/bin` directory to your `$PATH`
@@ -29,86 +29,87 @@ make local-setup
 
 This script performs the following actions: 
 * Builds all the binaries
-* Deploys three Kubernetes `1.22` clusters locally using [kind](https://kind.sigs.k8s.io/)
+* Deploys three Kubernetes 1.22 clusters locally using [kind](https://kind.sigs.k8s.io/)
 * Deploys and configures the ingress controllers in each cluster
 * Downloads kcp at the latest version integrated with GLBC
 * Starts the kcp server
 * Creates kcp workspaces for GLBC and user resources:
-    * kcp-glbc
-    * kcp-glbc-compute
-    * kcp-glbc-user
-    * kcp-glbc-user-compute
+    * `kcp-glbc`
+    * `kcp-glbc-compute`
+    * `kcp-glbc-user`
+    * `kcp-glbc-user-compute`
 * Add workload clusters to the `*-compute` workspaces
-    * kcp-glbc-compute: 1x kind cluster
-    * kcp-glbc-user-compute: 2x kind clusters
-* Deploy GLBC dependencies (cert-manager) into the kcp-glbc workspace.
+    * `kcp-glbc-compute`: 1x kind cluster
+    * `kcp-glbc-user-compute`: 2x kind clusters
+* Deploy GLBC dependencies (`cert-manager`) into the `kcp-glbc` workspace.
 
 -----
 
-After `local-setup` has successfully completed, it will say that kcp is now running. However, at this point, GLBC is not yet running. You will be presented in the terminal with two options to deploy GLBC:
+After `local-setup` has successfully completed, it will indicate that kcp is now running. However, at this point, GLBC is not yet running. You will be presented in the terminal with two options to deploy GLBC:
 
 1. [Local-deployment](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/local_deployment.md): this option is good for testing purposes by using a local kcp instance and kind clusters.
 
-2. [Deploy latest in kcp](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/deployment.md) with monitoring enabled: this will deploy GLBC to your target kcp instance. This will enable you to view observability in Prometheus and Grafana.
+1. [Deploy latest in kcp](https://github.com/Kuadrant/kcp-glbc/blob/main/docs/deployment.md) with monitoring enabled: this will deploy GLBC to your target kcp instance. This will enable you to view observability in Prometheus and Grafana.
 
 For the demo, before deploying GLBC, we will want to provide it with your AWS credentials and configuration.
 
 
 ### Provide GLBC with AWS credentials and configuration
+
 The easiest way to do this is to perform the following steps:
 
-1. Open the kcp-glbc project in your IDE.
-2. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
-3. Enter your `AWS access key ID` and `AWS Secret Access Key` as indicated in the example below:
+1. Open the `kcp-glbc` project in your IDE.
+1. Navigate to the `./config/deploy/local/aws-credentials.env` environment file.
+1. Enter your `AWS access key ID` and `AWS Secret Access Key` as indicated in the example below:
+  
+  ```bash
+   AWS_ACCESS_KEY_ID=EXAMPLEID2DJ3rSA3E
+   AWS_SECRET_ACCESS_KEY=EXAMPLEKEYIEI034+fETFDS34QFAD0IAO
+   ```
+4. Navigate to `./config/deploy/local/controller-config.env` and change the fields to resemble something similar to following:
 
-```bash
-AWS_ACCESS_KEY_ID=EXAMPLEID2DJ3rSA3E
-AWS_SECRET_ACCESS_KEY=EXAMPLEKEYIEI034+fETFDS34QFAD0IAO
-```
+   ```bash
+   AWS_DNS_PUBLIC_ZONE_ID=Z0485348LD348SDHJSR0
+   GLBC_DNS_PROVIDER=aws
+   GLBC_DOMAIN=cz.hcpapps.net
+   GLBC_ENABLE_CUSTOM_HOSTS=false
+   GLBC_KCP_CONTEXT=system:admin
+   GLBC_LOGICAL_CLUSTER_TARGET=*
+   GLBC_TLS_PROVIDED=true
+   GLBC_TLS_PROVIDER=glbc-ca
+   HCG_LE_EMAIL=kuadrant-dev@redhat.com
+   NAMESPACE=kcp-glbc
+   GLBC_WORKSPACE=root:default:kcp-glbc
+   GLBC_COMPUTE_WORKSPACE=root:default:kcp-glbc-user-compute
+   ```
 
-   
-4. Navigate to `./config/deploy/local/controller-config.env` and change the following fields to something similar to this:
-
-```bash
-AWS_DNS_PUBLIC_ZONE_ID=Z0485348LD348SDHJSR0
-GLBC_DNS_PROVIDER=aws
-GLBC_DOMAIN=cz.hcpapps.net
-GLBC_ENABLE_CUSTOM_HOSTS=false
-GLBC_KCP_CONTEXT=system:admin
-GLBC_LOGICAL_CLUSTER_TARGET=*
-GLBC_TLS_PROVIDED=true
-GLBC_TLS_PROVIDER=glbc-ca
-HCG_LE_EMAIL=kuadrant-dev@redhat.com
-NAMESPACE=kcp-glbc
-GLBC_WORKSPACE=root:default:kcp-glbc
-GLBC_COMPUTE_WORKSPACE=root:default:kcp-glbc-user-compute
-```
-
-The fields that might need to be edited include:
-  - Replace `<AWS_DNS_PUBLIC_ZONE_ID>` with your own hosted zone ID
-  - Replace `<GLBC_DNS_PROVIDER>` with `aws`
-  - Replace `<GLBC_DOMAIN>` with your specified subdomain
+   The fields that might need to be edited include:
+     - Replace `<AWS_DNS_PUBLIC_ZONE_ID>` with your own hosted zone ID
+     - Replace `<GLBC_DNS_PROVIDER>` with `aws`
+     - Replace `<GLBC_DOMAIN>` with your specified subdomain
 
 ### Run GLBC
-After all the above is set up correctly, for the demo, we can run the first command under Option 1 to change to the directory where the repo is located. The commands are similar to the following (run them in a new tab):
 
-```bash
-Run Option 1 (Local):
-       cd to/the/repo
-```
+After all the above is configured correctly, for the demo, we can run the first command under _Option 1_ to change to the directory where the repo is located. The commands are similar to the following (run them in a new tab):
 
-Then, in the same tab in the terminal, run the following command to have GLBC runnning and make use of your "controller-config.env" and "aws-credentials.env". This way, we will be able to curl the domain in the tutorial and visualize how the workload from cluster-1 migrates to cluster-2.
-```bash
-(export $(cat ./config/deploy/local/controller-config.env | xargs) && export $(cat ./config/deploy/local/aws-credentials.env | xargs) && KUBECONFIG=./tmp/kcp.kubeconfig ./bin/kcp-glbc)
-```
-<br>
+   ```bash
+   Run Option 1 (Local):
+          cd to/the/repo
+   ```
+
+Using the same tab in the terminal, run the following command to run GLBC and use `controller-config.env` and `aws-credentials.env`. We will be able to curl the domain in the tutorial and visualize how the workload migrates from `cluster-1` to `cluster-2`.
+
+   ```bash
+   (export $(cat ./config/deploy/local/controller-config.env | xargs) && export $(cat ./config/deploy/local/aws-credentials.env | xargs) && KUBECONFIG=./tmp/kcp.kubeconfig ./bin/kcp-glbc)
+   ```
 
 ### Deploy the sample service
 
 Now we will attempt to deploy the sample service. You can do this by running the following command in a new tab in the terminal:
-```bash
-./samples/location-api/sample.sh
-```
+
+   ```bash
+   ./samples/location-api/sample.sh
+   ```
 After the sample service has been deployed, we are presented with the following output of what was done, and some useful commands:
 
 ![Screenshot from 2022-08-02 12-22-17](https://user-images.githubusercontent.com/73656840/182363020-6aa61b73-c2a7-4570-ada7-aae97ad9db00.png)
@@ -116,47 +117,39 @@ After the sample service has been deployed, we are presented with the following 
 
 The sample script will remain paused until we press the enter key to migrate the workload from one cluster to the other. However, we will not perform this action just yet.
 
-<br>
 
 ## Verify sample service deployment
+
 1. In a new terminal, verify that the ingress was created after deploying the sample service:
-```bash
-export KUBECONFIG=.kcp/admin.kubeconfig                                         
-./bin/kubectl-kcp workspace use root:default:kcp-glbc-user
-kubectl get ingress
-```
-```bash
-NAME                AGE
-ingress-nondomain   81s
-```
+   ```bash
+   export KUBECONFIG=.kcp/admin.kubeconfig                                         
+   ./bin/kubectl-kcp workspace use root:default:kcp-glbc-user
+   kubectl get ingress
+   ```
+   ```bash
+   NAME                AGE
+   ingress-nondomain   81s
+   ```
 
-2. Verify that the DNS record was created:
-```bash
-export KUBECONFIG=.kcp/admin.kubeconfig                                         
-./bin/kubectl-kcp workspace use root:default:kcp-glbc-user
-kubectl get dnsrecords ingress-nondomain -o yaml
-```
-We might not get an output just yet until the DNS record exists in route53 (This may take a couple of minutes).
+1. Verify that the DNS record was created:
+   ```bash
+   export KUBECONFIG=.kcp/admin.kubeconfig                                         
+   ./bin/kubectl-kcp workspace use root:default:kcp-glbc-user
+   kubectl get dnsrecords ingress-nondomain -o yaml
+   ```
+   We might not get an output just yet until the DNS record exists in `route53`. This may take several minutes.
 
-<br>
+1. Alternatively, you can also view if the DNS record was created, by  in your AWS domain .
 
-You could also view in your AWS domain if the DNS record was created.
-
-![Screenshot from 2022-08-02 12-26-19](https://user-images.githubusercontent.com/73656840/182363808-558f8a40-4ed6-4e08-9c02-1d74b6209b46.png)
+   ![Screenshot from 2022-08-02 12-26-19](https://user-images.githubusercontent.com/73656840/182363808-558f8a40-4ed6-4e08-9c02-1d74b6209b46.png)
 
 
-
-
-<br>
-
-## Main Use Case - Demo on providing ingress in a multi-cluster ingress scenario
+## (Main Use Case) Demo: **Providing ingress in a multi-cluster ingress scenario**
 
 This section will show how GLBC is used to provide ingress in a multi-cluster ingress scenario.
 
+For this tutorial, after following along the with the [Installation]() section of this document, we should already have kcp and GLBC running, and also have had deployed the sample service which would have created a placement resource, an ingress named *"ingress-nondomain"* and a DNS record. To note: the "default" namespace is where we are putting all the sample resources at the moment.
 
-For this tutorial, after following along the "Installation" section of this document, we should already have kcp and GLBC running, and also have had deployed the sample service which would have created a placement resource, an ingress named *"ingress-nondomain"* and a DNS record. To note: the "default" namespace is where we are putting all the sample resources at the moment.
-
-<br>
 
 ### Viewing the "default" namespace
 
